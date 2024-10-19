@@ -1,0 +1,64 @@
+body {
+    font-family: poppins, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f4f4f4;
+}
+
+.container {
+    position: relative;
+    width: 80%;
+    margin: 0 auto;
+}
+
+.image-comparator {
+    position: relative;
+    overflow: hidden;
+    border: 2px dashed #ccc; /* Dashed border for the drop area */
+    padding: 20px;
+    height: 100px;
+    text-align: center; /* Center text */
+    background-color: #fff; /* Background color */
+}
+
+.image-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+#image1,
+#image2 {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    transition: opacity 0.3s;
+}
+
+#image2 {
+    clip-path: inset(0 50% 0 0);
+}
+
+#slider {
+    position: absolute;
+    height: 100%;
+    width: 2px;
+    background-color: #ff0000; /* Slider color */
+    z-index: 2;
+    cursor: ew-resize;
+}
+
+input[type="range"] {
+    width: 100%;
+    margin-top: 20px;
+}
+
+.hidden {
+    display: none; /* Class to hide elements */
+}
+
+.drop-area {
+    background-color: #f9f9f9; /* Background for drop area */
+}
+
