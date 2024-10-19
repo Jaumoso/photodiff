@@ -62,3 +62,16 @@ input[type="range"] {
     background-color: #f9f9f9; /* Background for drop area */
 }
 
+.footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    color: rgb(92, 92, 92);
+    text-align: center;
+    padding: 1em;
+}
+
+a {
+    text-decoration: none;
+}

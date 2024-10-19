@@ -1,0 +1,21 @@
+name: Docker
+run-name: Docker image creation
+on:
+  workflow_dispatch:
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: "1"
+
+      - name: Create Docker image
+        run: docker build -t ghcr.io/jaumoso/photo-compare:latest .
+
+      - name: Publish images
+        run: |
+          echo ${{ secrets.PAT }} | docker login ghcr.io -u Jaumoso --password-stdin
+          docker push ghcr.io/jaumoso/photo-compare:latest
+          docker push ghcr.io/jaumoso/photo-compare:latest
