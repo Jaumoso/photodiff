@@ -44,10 +44,10 @@ body {
     position: absolute;
     height: 100%;
     width: 2px;
-    background-color: #ff0000; /* Slider color */
+    background-color: #ff0000;
     z-index: 2;
     cursor: ew-resize;
-}
+  }  
 
 input[type="range"] {
     width: 100%;
@@ -63,15 +63,51 @@ input[type="range"] {
 }
 
 .footer {
-    position: absolute;
+    position: relative; /* Allow footer to be pushed down by content */
     bottom: 0;
     left: 0;
     right: 0;
     color: rgb(92, 92, 92);
     text-align: center;
     padding: 1em;
+    background-color: #f4f4f4;
+    margin-top: auto;
 }
 
 a {
     text-decoration: none;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+table, th, td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+}
+
+#thumbnail {
+    max-width: 200px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal; 
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.match {
+    color: rgb(0, 179, 0);
+}
+.diff {
+    color: rgb(212, 0, 0);
 }
