@@ -18,9 +18,13 @@
       <h1>Photo Diff Checker</h1>
       <div class="image-comparator" id="dropArea">
         <div class="image-wrapper">
-          <img id="image1" src="" alt="Image 1" hidden />
+          <div id="image1-name" class="image-name top-left"></div>
+          <!-- Image 1 name -->
+          <img id="image1" src="" alt="Left Comparison" hidden />
           <div id="slider"></div>
-          <img id="image2" src="" alt="Image 2" hidden />
+          <div id="image2-name" class="image-name top-right"></div>
+          <!-- Image 2 name -->
+          <img id="image2" src="" alt="Right Comparison" hidden />
         </div>
       </div>
       <input
@@ -50,7 +54,7 @@
     <footer class="footer">
       <p>
         This is just a frontend. Photos are not sent anywhere.
-        <a href="https://github.com/Jaumoso/">GitHub</a>
+        <a href="https://github.com/Jaumoso/photo-compare">GitHub</a>
       </p>
     </footer>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exif-js/2.3.0/exif.js"></script>

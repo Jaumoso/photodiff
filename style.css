@@ -111,3 +111,24 @@ tbody tr:nth-child(even) {
 .diff {
     color: rgb(212, 0, 0);
 }
+
+.image-name {
+    position: absolute;
+    font-size: 16px;
+    color: #fff; /* Change to white for better visibility */
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    padding: 5px;
+    border-radius: 3px;
+  }
+  
+  .top-left {
+    top: 10px; /* Adjust this value as needed */
+    left: 10px; /* Adjust this value as needed */
+    z-index: 2;
+  }
+  
+  .top-right {
+    top: 10px; /* Adjust this value as needed */
+    right: 10px; /* Adjust this value as needed */
+    z-index: 2;
+  }

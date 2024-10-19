@@ -91,10 +91,12 @@ function extractEXIF(file, imageNumber) {
       img1EXIF = allTags;
       img1FileSize = file.size;
       document.getElementById("img1name").textContent = file.name;
+      document.getElementById("image1-name").textContent = file.name; // Set image 1 name
     } else {
       img2EXIF = allTags;
       img2FileSize = file.size;
       document.getElementById("img2name").textContent = file.name;
+      document.getElementById("image2-name").textContent = file.name; // Set image 2 name
     }
 
     displayEXIF(); // Show EXIF and file size in the table
@@ -114,12 +116,12 @@ function handleDrop(event) {
       reader.onload = (function (index) {
         return function (e) {
           if (index === 0) {
-            image1.src = e.target.result;
-            image1.hidden = false;
+            image2.src = e.target.result; // First image goes to image2 (left)
+            image2.hidden = false;
             extractEXIF(file, 1); // Extract EXIF of first img
           } else {
-            image2.src = e.target.result;
-            image2.hidden = false;
+            image1.src = e.target.result; // Second image goes to image1 (right)
+            image1.hidden = false;
             extractEXIF(file, 2); // Extract EXIF of second img
           }
           imagesLoaded++;
@@ -152,12 +154,12 @@ function handlePaste(event) {
       reader.onload = (function (index) {
         return function (e) {
           if (index === 0) {
-            image1.src = e.target.result;
-            image1.hidden = false;
+            image2.src = e.target.result; // First image goes to image2 (left)
+            image2.hidden = false;
             extractEXIF(file, 1); // Extract EXIF of first img
           } else {
-            image2.src = e.target.result;
-            image2.hidden = false;
+            image1.src = e.target.result; // Second image goes to image1 (right)
+            image1.hidden = false;
             extractEXIF(file, 2); // Extract EXIF of second img
           }
           imagesLoaded++;
@@ -172,7 +174,6 @@ function handlePaste(event) {
     });
   }
 }
-
 // Prevent default drag behaviors
 dropArea.addEventListener("dragover", (event) => {
   event.preventDefault();
@@ -192,6 +193,6 @@ sliderInput.addEventListener("input", function () {
 
   // Adjust the clip-path of the second image to reveal or hide parts of it
   if (image2.src) {
-    image2.style.clipPath = `inset(0 ${100 - value}% 0 0)`; // This clips the second image based on slider value
+    image2.style.clipPath = `inset(0 ${100 - value}% 0 0)`; // Clipping effect remains unchanged
   }
 });
