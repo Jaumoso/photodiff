@@ -14,12 +14,12 @@ A very simple frontend to compare visual and EXIF data of 2 photos and spot diff
 
 #### Default Page
 
-![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
+![Default Page](https://github.com/Jaumoso/photo-compare/blob/main/images/examples/default.png)
 
 #### Visual comparison slider
 
-![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
+![Visual Slider](https://github.com/Jaumoso/photo-compare/blob/main/images/examples/visual.png)
 
 #### EXIF data comparison
 
-![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
+![EXIF Data](https://github.com/Jaumoso/photo-compare/blob/main/images/examples/exif.png)
