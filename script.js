@@ -3,6 +3,8 @@ const image1 = document.getElementById("image1");
 const image2 = document.getElementById("image2");
 const slider = document.getElementById("slider");
 const dropArea = document.getElementById("dropArea");
+const fileUpload = document.getElementById("fileUpload");
+const fileCount = document.getElementById("fileCount");
 const exifTableBody = document.querySelector("#exifTable tbody");
 
 let imagesLoaded = 0;
@@ -174,6 +176,58 @@ function handlePaste(event) {
     });
   }
 }
+
+function handleUpload() {
+  const files = Array.from(fileUpload.files); // Convert FileList to an array
+
+  if (files.length == 2) {
+    fileCount.textContent = `2 files selected: ${files[0].name}, ${files[1].name}`;
+
+    files.forEach((file, index) => {
+      const reader = new FileReader();
+      reader.onload = (function (index) {
+        return function (e) {
+          if (index === 0) {
+            image2.src = e.target.result; // First image goes to image2 (left)
+            image2.hidden = false;
+            extractEXIF(file, 1); // Extract EXIF of first img
+          } else {
+            image1.src = e.target.result; // Second image goes to image1 (right)
+            image1.hidden = false;
+            extractEXIF(file, 2); // Extract EXIF of second img
+          }
+          imagesLoaded++;
+          if (imagesLoaded === 2) {
+            sliderInput.hidden = false; // Show the slider when both images are loaded
+            adjustHeight(); // Adjust layout after images load
+          }
+        };
+      })(index);
+
+      reader.readAsDataURL(file);
+    });
+  } else {
+    fileCount.textContent = "No file selected";
+    sendNotification("Only 2 files supported");
+    imagesLoaded = 0; // Reset imagesLoaded if the file selection is invalid
+  }
+}
+
+function sendNotification(message) {
+  const notification = document.getElementById("notification");
+
+  // Set the message
+  notification.textContent = message;
+
+  // Add the "show" class to make it visible
+  notification.classList.add("show");
+
+  // After 3 seconds, remove the show class and hide the notification
+  setTimeout(() => {
+    notification.classList.remove("show");
+  }, 3000); // 3 seconds
+}
+
 // Prevent default drag behaviors
 dropArea.addEventListener("dragover", (event) => {
   event.preventDefault();
@@ -183,6 +237,9 @@ dropArea.addEventListener("drop", handleDrop);
 
 // Handle paste event
 document.addEventListener("paste", handlePaste);
+
+// Handle file upload button
+fileUpload.addEventListener("change", handleUpload);
 
 // Update slider functionality
 sliderInput.addEventListener("input", function () {

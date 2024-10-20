@@ -15,6 +15,7 @@
   </head>
   <body>
     <div class="container">
+      <div id="notification"></div>
       <h1>Photo Diff Checker</h1>
       <div class="image-comparator" id="dropArea">
         <div class="image-wrapper">
@@ -35,7 +36,19 @@
         value="50"
         hidden
       />
-      <p>Drag and drop two images here or paste them</p>
+      <p>
+        Drag and drop two images here, paste them, or upload them with the
+        button.
+      </p>
+      <label for="fileUpload" class="custom-file-upload"> Select photos </label>
+      <span id="fileCount">No photos selected</span>
+      <input
+        id="fileUpload"
+        type="file"
+        accept="image/png, image/jpeg, image/jpg, image/gif, image/webp, image/bmp, image/tiff"
+        multiple
+        style="display: none"
+      />
 
       <h2>EXIF Details Comparison</h2>
       <table id="exifTable">

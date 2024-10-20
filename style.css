@@ -119,16 +119,57 @@ tbody tr:nth-child(even) {
     background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
     padding: 5px;
     border-radius: 3px;
-  }
+}
   
-  .top-left {
+.top-left {
     top: 10px; /* Adjust this value as needed */
     left: 10px; /* Adjust this value as needed */
     z-index: 2;
-  }
+}
   
-  .top-right {
+.top-right {
     top: 10px; /* Adjust this value as needed */
     right: 10px; /* Adjust this value as needed */
     z-index: 2;
-  }
+}
+
+.custom-file-upload {
+    display: inline-block;
+    padding: 5px 10px;
+    cursor: pointer;
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.custom-file-upload:hover {
+    background-color: #418b43;
+}
+
+.custom-file-upload:active {
+    background-color: #306932;
+}
+
+#notification {
+    visibility: hidden;
+    min-width: 250px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 4px;
+    padding: 16px;
+    position: fixed;
+    z-index: 1;
+    right: 30px;
+    bottom: 30px;
+    font-size: 17px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    transition: opacity 0.5s, visibility 0.5s;
+}
+
+#notification.show {
+    visibility: visible;
+    opacity: 1;
+}
