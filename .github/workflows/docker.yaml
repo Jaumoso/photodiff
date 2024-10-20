@@ -2,6 +2,9 @@ name: Docker
 run-name: Docker image creation
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
 jobs:
   docker:
     runs-on: ubuntu-latest
