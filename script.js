@@ -64,7 +64,7 @@ function displayEXIF() {
       const img2Cell = document.createElement("td");
       img2Cell.textContent = img2EXIF[property] || "N/A";
 
-      if (property == "thumbnail") {
+      if (property == "thumbnail" || "UserComment") {
         img1Cell.textContent = JSON.stringify(img1EXIF[property]) || "N/A";
         img2Cell.textContent = JSON.stringify(img2EXIF[property]) || "N/A";
         img1Cell.id = "thumbnail";
@@ -136,6 +136,8 @@ function handleDrop(event) {
 
       reader.readAsDataURL(file);
     }
+  } else {
+    sendNotification("Only 2 files supported");
   }
 }
 
@@ -174,6 +176,8 @@ function handlePaste(event) {
 
       reader.readAsDataURL(file);
     });
+  } else {
+    sendNotification("Only 2 files supported");
   }
 }
 
