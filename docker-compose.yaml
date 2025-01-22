@@ -1,6 +1,6 @@
 services:
-  photo-compare:
-    container_name: photo-compare
-    image: ghcr.io/jaumoso/photo-compare:latest
+  photodiff:
+    container_name: photodiff
+    image: ghcr.io/jaumoso/photodiff:latest
     ports:
       - 4200:80

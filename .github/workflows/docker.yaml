@@ -15,10 +15,10 @@ jobs:
           fetch-depth: "1"
 
       - name: Create Docker image
-        run: docker build -t ghcr.io/jaumoso/photo-compare:latest .
+        run: docker build -t ghcr.io/jaumoso/photodiff:latest .
 
       - name: Publish images
         run: |
           echo ${{ secrets.PAT }} | docker login ghcr.io -u Jaumoso --password-stdin
-          docker push ghcr.io/jaumoso/photo-compare:latest
-          docker push ghcr.io/jaumoso/photo-compare:latest
+          docker push ghcr.io/jaumoso/photodiff:latest
+          docker push ghcr.io/jaumoso/photodiff:latest

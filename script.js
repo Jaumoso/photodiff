@@ -6,12 +6,118 @@ const dropArea = document.getElementById("dropArea");
 const fileUpload = document.getElementById("fileUpload");
 const fileCount = document.getElementById("fileCount");
 const exifTableBody = document.querySelector("#exifTable tbody");
+import pixelmatch from "https://esm.run/pixelmatch";
 
 let imagesLoaded = 0;
 let img1EXIF = null;
 let img2EXIF = null;
 let img1FileSize = 0;
 let img2FileSize = 0;
+console.log("pixelmatch loaded:", typeof pixelmatch !== "undefined");
+
+let canvas1, canvas2, canvas3, ctx1, ctx2, diffContext;
+
+function calculateImageSimilarity(img1, img2) {
+  canvas1 = document.createElement("canvas");
+  canvas2 = document.createElement("canvas");
+  canvas3 = document.createElement("canvas");
+  ctx1 = canvas1.getContext("2d");
+  ctx2 = canvas2.getContext("2d");
+  diffContext = canvas3.getContext("2d");
+
+  canvas1.width = img1.width;
+  canvas1.height = img1.height;
+  canvas2.width = img2.width;
+  canvas2.height = img2.height;
+  canvas3.width = img2.width;
+  canvas3.height = img2.height;
+
+  ctx1.drawImage(img1, 0, 0);
+  ctx2.drawImage(img2, 0, 0);
+
+  const imageData1 = ctx1.getImageData(0, 0, canvas1.width, canvas1.height);
+  const imageData2 = ctx2.getImageData(0, 0, canvas2.width, canvas2.height);
+  const diff = diffContext.createImageData(canvas3.width, canvas3.height);
+
+  const diffCount = pixelmatch(
+    imageData1.data,
+    imageData2.data,
+    diff.data,
+    canvas1.width,
+    canvas1.height,
+    {
+      threshold: 0.5,
+    }
+  );
+
+  const totalPixels = canvas1.width * canvas1.height;
+  const similarity = 1 - diffCount / totalPixels;
+
+  // const pixelCount = imageData1.data.length;
+  // let diffCount = 0;
+
+  // for (let i = 0; i < pixelCount; i += 4) {
+  //   if (
+  //     imageData1.data[i] !== imageData2.data[i] ||
+  //     imageData1.data[i + 1] !== imageData2.data[i + 1] ||
+  //     imageData1.data[i + 2] !== imageData2.data[i + 2]
+  //   ) {
+  //     diffCount++;
+  //   }
+  // }
+
+  // const similarityRatio = 1 - diffCount / (pixelCount / 4);
+  return similarity;
+}
+
+// Add this function to compare image quality
+function compareImageQuality(img1, img2) {
+  const sharpness1 = calculateSharpness(ctx1, canvas1.width, canvas1.height);
+  const sharpness2 = calculateSharpness(ctx2, canvas2.width, canvas2.height);
+
+  const contrast1 = calculateContrast(ctx1, canvas1.width, canvas1.height);
+  const contrast2 = calculateContrast(ctx2, canvas2.width, canvas2.height);
+
+  return {
+    sharpness: sharpness1 > sharpness2 ? 1 : 2,
+    contrast: contrast1 > contrast2 ? 1 : 2,
+  };
+}
+
+function calculateSharpness(ctx, width, height) {
+  const imageData = ctx.getImageData(0, 0, width, height);
+  let sharpness = 0;
+
+  for (let y = 1; y < height - 1; y++) {
+    for (let x = 1; x < width - 1; x++) {
+      const idx = (y * width + x) * 4;
+      const horizontalDiff = Math.abs(
+        imageData.data[idx] - imageData.data[idx + 4]
+      );
+      const verticalDiff = Math.abs(
+        imageData.data[idx] - imageData.data[idx + width * 4]
+      );
+      sharpness += horizontalDiff + verticalDiff;
+    }
+  }
+
+  return sharpness / (width * height);
+}
+
+function calculateContrast(ctx, width, height) {
+  const imageData = ctx.getImageData(0, 0, width, height);
+  let min = 255;
+  let max = 0;
+
+  for (let i = 0; i < imageData.data.length; i += 4) {
+    const brightness =
+      (imageData.data[i] + imageData.data[i + 1] + imageData.data[i + 2]) / 3;
+    if (brightness < min) min = brightness;
+    if (brightness > max) max = brightness;
+  }
+
+  return max - min;
+}
 
 // Function to adjust the height of the image comparator
 function adjustHeight() {
@@ -204,6 +310,18 @@ function handleUpload() {
           if (imagesLoaded === 2) {
             sliderInput.hidden = false; // Show the slider when both images are loaded
             adjustHeight(); // Adjust layout after images load
+
+            const similarityRatio = calculateImageSimilarity(image1, image2);
+            const qualityComparison = compareImageQuality(image1, image2);
+
+            const comparisonResults =
+              document.getElementById("comparisonResults");
+            comparisonResults.innerHTML = `
+              <h3>Image Comparison Results</h3>
+              <p>Similarity Ratio: ${(similarityRatio * 100).toFixed(2)}%</p>
+              <p>Better Sharpness: Image ${qualityComparison.sharpness}</p>
+              <p>Better Contrast: Image ${qualityComparison.contrast}</p>
+            `;
           }
         };
       })(index);

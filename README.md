@@ -1,4 +1,4 @@
-# Photo-Compare
+# Photodiff
 
 A very simple frontend to compare visual and EXIF data of 2 photos and spot differences.
 
@@ -14,12 +14,12 @@ A very simple frontend to compare visual and EXIF data of 2 photos and spot diff
 
 #### Default Page
 
-![Default Page](https://github.com/Jaumoso/photo-compare/blob/main/images/examples/default.png)
+![Default Page](https://github.com/Jaumoso/photodiff/blob/main/images/examples/default.png)
 
 #### Visual comparison slider
 
-![Visual Slider](https://github.com/Jaumoso/photo-compare/blob/main/images/examples/visual.png)
+![Visual Slider](https://github.com/Jaumoso/photodiff/blob/main/images/examples/visual.png)
 
 #### EXIF data comparison
 
-![EXIF Data](https://github.com/Jaumoso/photo-compare/blob/main/images/examples/exif.png)
+![EXIF Data](https://github.com/Jaumoso/photodiff/blob/main/images/examples/exif.png)
