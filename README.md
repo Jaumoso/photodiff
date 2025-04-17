@@ -10,6 +10,15 @@ A very simple frontend to compare visual and EXIF data of 2 photos and spot diff
 
 \*_Only 2 files suported_
 
+## Local deployment
+
+It can be deployed via Docker or Docker Compose, but if a local development deployment is needed:
+
+```
+npm install -g live-server
+live-server --port=8080 --no-browser
+```
+
 ## Screenshots
 
 #### Default Page

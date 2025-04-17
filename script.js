@@ -18,6 +18,9 @@ console.log("pixelmatch loaded:", typeof pixelmatch !== "undefined");
 let canvas1, canvas2, canvas3, ctx1, ctx2, diffContext;
 
 function calculateImageSimilarity(img1, img2) {
+  const width = Math.min(img1.naturalWidth, img2.naturalWidth);
+  const height = Math.min(img1.naturalHeight, img2.naturalHeight);
+
   canvas1 = document.createElement("canvas");
   canvas2 = document.createElement("canvas");
   canvas3 = document.createElement("canvas");
@@ -25,48 +28,30 @@ function calculateImageSimilarity(img1, img2) {
   ctx2 = canvas2.getContext("2d");
   diffContext = canvas3.getContext("2d");
 
-  canvas1.width = img1.width;
-  canvas1.height = img1.height;
-  canvas2.width = img2.width;
-  canvas2.height = img2.height;
-  canvas3.width = img2.width;
-  canvas3.height = img2.height;
+  canvas1.width = canvas2.width = canvas3.width = width;
+  canvas1.height = canvas2.height = canvas3.height = height;
 
-  ctx1.drawImage(img1, 0, 0);
-  ctx2.drawImage(img2, 0, 0);
+  ctx1.drawImage(img1, 0, 0, width, height);
+  ctx2.drawImage(img2, 0, 0, width, height);
 
-  const imageData1 = ctx1.getImageData(0, 0, canvas1.width, canvas1.height);
-  const imageData2 = ctx2.getImageData(0, 0, canvas2.width, canvas2.height);
-  const diff = diffContext.createImageData(canvas3.width, canvas3.height);
+  const imageData1 = ctx1.getImageData(0, 0, width, height);
+  const imageData2 = ctx2.getImageData(0, 0, width, height);
+  const diff = diffContext.createImageData(width, height);
 
   const diffCount = pixelmatch(
     imageData1.data,
     imageData2.data,
     diff.data,
-    canvas1.width,
-    canvas1.height,
+    width,
+    height,
     {
-      threshold: 0.5,
+      threshold: 0.1,
     }
   );
 
-  const totalPixels = canvas1.width * canvas1.height;
+  const totalPixels = width * height;
   const similarity = 1 - diffCount / totalPixels;
 
-  // const pixelCount = imageData1.data.length;
-  // let diffCount = 0;
-
-  // for (let i = 0; i < pixelCount; i += 4) {
-  //   if (
-  //     imageData1.data[i] !== imageData2.data[i] ||
-  //     imageData1.data[i + 1] !== imageData2.data[i + 1] ||
-  //     imageData1.data[i + 2] !== imageData2.data[i + 2]
-  //   ) {
-  //     diffCount++;
-  //   }
-  // }
-
-  // const similarityRatio = 1 - diffCount / (pixelCount / 4);
   return similarity;
 }
 
@@ -170,15 +155,15 @@ function displayEXIF() {
       const img2Cell = document.createElement("td");
       img2Cell.textContent = img2EXIF[property] || "N/A";
 
-      if (property == "thumbnail" || "UserComment") {
+      if (property === "thumbnail" || property === "UserComment") {
         img1Cell.textContent = JSON.stringify(img1EXIF[property]) || "N/A";
         img2Cell.textContent = JSON.stringify(img2EXIF[property]) || "N/A";
         img1Cell.id = "thumbnail";
         img2Cell.id = "thumbnail";
       }
 
-      row.appendChild(img2Cell);
       row.appendChild(img1Cell);
+      row.appendChild(img2Cell);
 
       // styling for differences
       const exifMatch = img1Cell.textContent === img2Cell.textContent;
@@ -220,7 +205,6 @@ function handleDrop(event) {
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       const reader = new FileReader();
-
       reader.onload = (function (index) {
         return function (e) {
           if (index === 0) {
@@ -234,8 +218,25 @@ function handleDrop(event) {
           }
           imagesLoaded++;
           if (imagesLoaded === 2) {
-            sliderInput.hidden = false;
-            adjustHeight();
+            Promise.all([
+              waitForImageLoad(image1),
+              waitForImageLoad(image2),
+            ]).then(() => {
+              sliderInput.hidden = false; // Show the slider when both images are loaded
+              adjustHeight(); // Adjust layout after images load
+
+              const similarityRatio = calculateImageSimilarity(image1, image2);
+              const qualityComparison = compareImageQuality(image1, image2);
+
+              const comparisonResults =
+                document.getElementById("comparisonResults");
+              comparisonResults.innerHTML = `
+                <h3>Image Comparison Results</h3>
+                <p>Similarity Ratio: ${(similarityRatio * 100).toFixed(2)}%</p>
+                <p>Better Sharpness: Image ${qualityComparison.sharpness}</p>
+                <p>Better Contrast: Image ${qualityComparison.contrast}</p>
+              `;
+            });
           }
         };
       })(i);
@@ -259,6 +260,7 @@ function handlePaste(event) {
   }
 
   if (files.length === 2) {
+    imagesLoaded = 0;
     files.forEach((file, index) => {
       const reader = new FileReader();
       reader.onload = (function (index) {
@@ -274,8 +276,25 @@ function handlePaste(event) {
           }
           imagesLoaded++;
           if (imagesLoaded === 2) {
-            sliderInput.hidden = false;
-            adjustHeight();
+            Promise.all([
+              waitForImageLoad(image1),
+              waitForImageLoad(image2),
+            ]).then(() => {
+              sliderInput.hidden = false; // Show the slider when both images are loaded
+              adjustHeight(); // Adjust layout after images load
+
+              const similarityRatio = calculateImageSimilarity(image1, image2);
+              const qualityComparison = compareImageQuality(image1, image2);
+
+              const comparisonResults =
+                document.getElementById("comparisonResults");
+              comparisonResults.innerHTML = `
+                <h3>Image Comparison Results</h3>
+                <p>Similarity Ratio: ${(similarityRatio * 100).toFixed(2)}%</p>
+                <p>Better Sharpness: Image ${qualityComparison.sharpness}</p>
+                <p>Better Contrast: Image ${qualityComparison.contrast}</p>
+              `;
+            });
           }
         };
       })(index);
@@ -292,7 +311,7 @@ function handleUpload() {
 
   if (files.length == 2) {
     fileCount.textContent = `2 files selected: ${files[0].name}, ${files[1].name}`;
-
+    imagesLoaded = 0;
     files.forEach((file, index) => {
       const reader = new FileReader();
       reader.onload = (function (index) {
@@ -308,20 +327,25 @@ function handleUpload() {
           }
           imagesLoaded++;
           if (imagesLoaded === 2) {
-            sliderInput.hidden = false; // Show the slider when both images are loaded
-            adjustHeight(); // Adjust layout after images load
+            Promise.all([
+              waitForImageLoad(image1),
+              waitForImageLoad(image2),
+            ]).then(() => {
+              sliderInput.hidden = false; // Show the slider when both images are loaded
+              adjustHeight(); // Adjust layout after images load
 
-            const similarityRatio = calculateImageSimilarity(image1, image2);
-            const qualityComparison = compareImageQuality(image1, image2);
+              const similarityRatio = calculateImageSimilarity(image1, image2);
+              const qualityComparison = compareImageQuality(image1, image2);
 
-            const comparisonResults =
-              document.getElementById("comparisonResults");
-            comparisonResults.innerHTML = `
-              <h3>Image Comparison Results</h3>
-              <p>Similarity Ratio: ${(similarityRatio * 100).toFixed(2)}%</p>
-              <p>Better Sharpness: Image ${qualityComparison.sharpness}</p>
-              <p>Better Contrast: Image ${qualityComparison.contrast}</p>
-            `;
+              const comparisonResults =
+                document.getElementById("comparisonResults");
+              comparisonResults.innerHTML = `
+                <h3>Image Comparison Results</h3>
+                <p>Similarity Ratio: ${(similarityRatio * 100).toFixed(2)}%</p>
+                <p>Better Sharpness: Image ${qualityComparison.sharpness}</p>
+                <p>Better Contrast: Image ${qualityComparison.contrast}</p>
+              `;
+            });
           }
         };
       })(index);
@@ -333,6 +357,16 @@ function handleUpload() {
     sendNotification("Only 2 files supported");
     imagesLoaded = 0; // Reset imagesLoaded if the file selection is invalid
   }
+}
+
+function waitForImageLoad(img) {
+  return new Promise((resolve) => {
+    if (img.complete) {
+      resolve();
+    } else {
+      img.onload = () => resolve();
+    }
+  });
 }
 
 function sendNotification(message) {
