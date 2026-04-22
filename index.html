@@ -1,90 +1,369 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Photo Compare</title>
+    <title>PhotoDiff</title>
     <link rel="stylesheet" href="style.css" />
-    <!-- Icon -->
-    <link rel="Icon" href="./assets/icons/icon24.png" type="image/x-icon" />
-    <!-- Fonts -->
+    <link rel="icon" href="./assets/icons/icon24.png" type="image/x-icon" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
     <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
   </head>
   <body>
-    <div class="container">
-      <div id="notification"></div>
-      <h1>Photo Diff Checker</h1>
-      <div class="image-comparator" id="dropArea">
-        <div class="image-wrapper">
-          <div id="image1-name" class="image-name top-left"></div>
-          <!-- Image 1 name -->
-          <img id="image1" src="" alt="Left Comparison" hidden />
-          <div id="slider"></div>
-          <div id="image2-name" class="image-name top-right"></div>
-          <!-- Image 2 name -->
-          <img id="image2" src="" alt="Right Comparison" hidden />
-        </div>
+    <div id="notification"></div>
+
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-left">
+        <img
+          src="./assets/icons/icon24.png"
+          alt="PhotoDiff"
+          class="header-logo"
+        />
+        <h1>PhotoDiff</h1>
       </div>
-      <input
-        type="range"
-        id="sliderInput"
-        min="0"
-        max="100"
-        value="50"
-        hidden
-      />
-      <p>
-        Drag and drop two photos here, paste them, or upload them with the
-        button.
-      </p>
-      <label for="fileUpload" class="custom-file-upload"> Select photos </label>
-      <span id="fileCount">No photos selected</span>
-      <input
-        id="fileUpload"
-        type="file"
-        accept="image/png, image/jpeg, image/jpg, image/gif, image/webp, image/bmp, image/tiff"
-        multiple
-        style="display: none"
-      />
+      <div class="header-right">
+        <button id="themeToggle" class="icon-btn" title="Toggle theme">
+          <svg
+            class="icon-sun"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <circle cx="12" cy="12" r="5" />
+            <line x1="12" y1="1" x2="12" y2="3" />
+            <line x1="12" y1="21" x2="12" y2="23" />
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+            <line x1="1" y1="12" x2="3" y2="12" />
+            <line x1="21" y1="12" x2="23" y2="12" />
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+          </svg>
+          <svg
+            class="icon-moon"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+          </svg>
+        </button>
+      </div>
+    </header>
 
-      <!-- Hidden canvases -->
-      <!-- <canvas hidden></canvas><canvas hidden></canvas><canvas hidden></canvas> -->
-      <div id="comparisonResults"></div>
+    <main class="container">
+      <!-- Upload Section -->
+      <section class="section">
+        <div class="drop-zone" id="dropArea">
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="17 8 12 3 7 8" />
+            <line x1="12" y1="3" x2="12" y2="15" />
+          </svg>
+          <p class="drop-zone-text">
+            Drop images here, paste, or
+            <label for="fileUpload" class="upload-link">browse files</label>
+          </p>
+          <p class="drop-zone-hint">
+            Upload 2 or more images, then select 2 to compare
+          </p>
+          <input
+            id="fileUpload"
+            type="file"
+            accept="image/png,image/jpeg,image/jpg,image/gif,image/webp,image/bmp,image/tiff"
+            multiple
+            hidden
+          />
+        </div>
+      </section>
 
-      <h2>EXIF Details Comparison</h2>
-      <table id="exifTable">
-        <thead>
-          <tr>
-            <th>Property</th>
-            <th id="img1name">Photo 1</th>
-            <th id="img2name">Photo 2</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- Here will be added the EXIF data -->
-        </tbody>
-      </table>
-    </div>
-    <footer class="footer">
+      <!-- Gallery Section -->
+      <section class="section gallery-section" id="gallerySection" hidden>
+        <div class="section-header">
+          <h2>Images <span class="badge" id="imageCount">0</span></h2>
+          <div class="gallery-actions">
+            <span class="hint" id="selectionHint"
+              >Select 2 images to compare</span
+            >
+            <button class="btn btn-sm btn-danger" id="clearAllBtn">
+              Clear All
+            </button>
+          </div>
+        </div>
+        <div class="gallery" id="gallery"></div>
+      </section>
+
+      <!-- Comparator Section -->
+      <section class="section comparator-section" id="comparatorSection" hidden>
+        <div class="section-header">
+          <h2>Compare</h2>
+          <div class="compare-modes">
+            <button class="btn btn-sm btn-mode active" data-mode="slider">
+              Slider
+            </button>
+            <button class="btn btn-sm btn-mode" data-mode="side-by-side">
+              Side by Side
+            </button>
+            <button class="btn btn-sm btn-mode" data-mode="diff">
+              Difference
+            </button>
+            <button class="btn btn-sm btn-mode" data-mode="onion">
+              Onion Skin
+            </button>
+            <button class="btn btn-sm btn-mode" data-mode="flicker">
+              Flicker
+            </button>
+            <button class="btn btn-sm btn-mode" data-mode="highlight">
+              Highlight Diff
+            </button>
+          </div>
+          <div class="compare-controls">
+            <button class="icon-btn" id="zoomResetBtn" title="Reset zoom">
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                <line x1="8" y1="11" x2="14" y2="11" />
+                <line x1="11" y1="8" x2="11" y2="14" />
+              </svg>
+            </button>
+            <button class="icon-btn" id="fullscreenBtn" title="Fullscreen">
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <polyline points="15 3 21 3 21 9" />
+                <polyline points="9 21 3 21 3 15" />
+                <line x1="21" y1="3" x2="14" y2="10" />
+                <line x1="3" y1="21" x2="10" y2="14" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Slider Mode -->
+        <div class="compare-viewport" id="compareViewport">
+          <div class="compare-container" id="compareContainer">
+            <div class="compare-label left" id="labelLeft"></div>
+            <div class="compare-label right" id="labelRight"></div>
+            <canvas id="canvasLeft" class="compare-canvas"></canvas>
+            <canvas id="canvasRight" class="compare-canvas"></canvas>
+            <canvas id="canvasDiff" class="compare-canvas" hidden></canvas>
+            <div class="slider-handle" id="sliderHandle">
+              <div class="slider-line"></div>
+              <div class="slider-grip">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path d="M8 5l-5 7 5 7V5zm8 0v14l5-7-5-7z" />
+                </svg>
+              </div>
+            </div>
+            <!-- Color Picker Tooltip -->
+            <div class="color-picker-tooltip" id="colorPickerTooltip" hidden>
+              <div class="color-swatch" id="colorSwatch"></div>
+              <span id="colorValue"></span>
+            </div>
+            <!-- Magnifying Glass -->
+            <div class="magnifier" id="magnifier" hidden>
+              <canvas id="magnifierCanvas"></canvas>
+            </div>
+          </div>
+          <!-- Onion skin opacity slider -->
+          <div class="onion-controls" id="onionControls" hidden>
+            <label>Opacity</label>
+            <input
+              type="range"
+              id="onionOpacity"
+              min="0"
+              max="100"
+              value="50"
+            />
+            <span id="onionValue">50%</span>
+          </div>
+        </div>
+
+        <!-- Color Picker toggle -->
+        <div class="tool-bar">
+          <label class="tool-toggle">
+            <input type="checkbox" id="colorPickerToggle" />
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"
+              />
+            </svg>
+            Color Picker
+          </label>
+          <label class="tool-toggle">
+            <input type="checkbox" id="magnifierToggle" />
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            Magnifier
+          </label>
+        </div>
+      </section>
+
+      <!-- Metrics Section -->
+      <section class="section metrics-section" id="metricsSection" hidden>
+        <div class="section-header">
+          <h2>Metrics</h2>
+        </div>
+        <div class="metrics-grid" id="metricsGrid"></div>
+      </section>
+
+      <!-- Histogram Section -->
+      <section class="section histogram-section" id="histogramSection" hidden>
+        <div class="section-header">
+          <h2>Histograms</h2>
+          <div class="histogram-controls">
+            <button class="btn btn-sm btn-mode active" data-channel="all">
+              All
+            </button>
+            <button class="btn btn-sm btn-mode" data-channel="r">R</button>
+            <button class="btn btn-sm btn-mode" data-channel="g">G</button>
+            <button class="btn btn-sm btn-mode" data-channel="b">B</button>
+            <button class="btn btn-sm btn-mode" data-channel="lum">Lum</button>
+          </div>
+        </div>
+        <div class="histogram-grid">
+          <div class="histogram-card">
+            <h3 id="histLabel1">Image 1</h3>
+            <canvas id="histCanvas1" width="256" height="150"></canvas>
+          </div>
+          <div class="histogram-card">
+            <h3 id="histLabel2">Image 2</h3>
+            <canvas id="histCanvas2" width="256" height="150"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- EXIF Section -->
+      <section class="section exif-section" id="exifSection" hidden>
+        <div class="section-header">
+          <h2>EXIF Metadata</h2>
+          <div class="exif-controls">
+            <input
+              type="text"
+              id="exifSearch"
+              class="input-search"
+              placeholder="Search properties..."
+            />
+            <label class="tool-toggle">
+              <input type="checkbox" id="exifDiffOnly" />
+              Differences only
+            </label>
+          </div>
+        </div>
+        <div id="exifContent"></div>
+      </section>
+
+      <!-- Export Section -->
+      <section class="section export-section" id="exportSection" hidden>
+        <div class="section-header">
+          <h2>Export</h2>
+        </div>
+        <div class="export-buttons">
+          <button class="btn" id="exportCsvBtn">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+              />
+              <polyline points="14 2 14 8 20 8" />
+            </svg>
+            Export Metadata as CSV
+          </button>
+          <button class="btn" id="exportDiffBtn">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+              <circle cx="8.5" cy="8.5" r="1.5" />
+              <polyline points="21 15 16 10 5 21" />
+            </svg>
+            Download Difference Map
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <footer class="app-footer">
       <p>
-        This is just a frontend. Photos are not sent anywhere.
-        <a href="https://github.com/Jaumoso/photo-compare">GitHub</a>
+        100% client-side - your photos never leave your browser.
+        <a
+          href="https://github.com/Jaumoso/photo-compare"
+          target="_blank"
+          rel="noopener"
+          >GitHub</a
+        >
       </p>
     </footer>
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/exif-js/2.3.0/exif.js"></script> -->
 
-    <!-- <script src="https://cdn.jsdelivr.net/npm/pixelmatch@4.0.2/pixelmatch.js"></script> -->
-    <!-- <script
-      type="module"
-      src="https://cdn.jsdelivr.net/npm/pixelmatch@6.0.0/index.min.js"
-    ></script> -->
-    <!-- <script src="https://cdn.jsdelivr.net/npm/pixelmatch@6.0.0/index.js"></script> -->
+    <div class="loading-overlay" id="loadingOverlay" hidden>
+      <div class="spinner"></div>
+      <p>Processing images...</p>
+    </div>
 
     <script type="module" src="script.js"></script>
   </body>
