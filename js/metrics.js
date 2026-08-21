@@ -63,21 +63,54 @@ export function displayMetrics(data) {
         : c.compare >= c.compare2
           ? 0
           : 1;
-      card.innerHTML = `
-        <div class="metric-label">${c.label}</div>
-        <div class="metric-value">
-          <span class="${winner === 0 ? "metric-winner" : "metric-loser"}">${c.value}</span>
-          <span style="opacity:0.3;margin:0 4px">vs</span>
-          <span class="${winner === 1 ? "metric-winner" : "metric-loser"}">${c.value2}</span>
-        </div>
-        <div class="metric-detail">${names[winner]} wins</div>
-      `;
+
+      const labelEl = document.createElement("div");
+      labelEl.className = "metric-label";
+      labelEl.textContent = c.label;
+
+      const valueEl = document.createElement("div");
+      valueEl.className = "metric-value";
+
+      const leftEl = document.createElement("span");
+      leftEl.className = winner === 0 ? "metric-winner" : "metric-loser";
+      leftEl.textContent = c.value;
+
+      const vsEl = document.createElement("span");
+      vsEl.style.opacity = "0.3";
+      vsEl.style.margin = "0 4px";
+      vsEl.textContent = "vs";
+
+      const rightEl = document.createElement("span");
+      rightEl.className = winner === 1 ? "metric-winner" : "metric-loser";
+      rightEl.textContent = c.value2;
+
+      valueEl.appendChild(leftEl);
+      valueEl.appendChild(vsEl);
+      valueEl.appendChild(rightEl);
+
+      const detailEl = document.createElement("div");
+      detailEl.className = "metric-detail";
+      detailEl.textContent = `${names[winner]} wins`;
+
+      card.appendChild(labelEl);
+      card.appendChild(valueEl);
+      card.appendChild(detailEl);
     } else {
-      card.innerHTML = `
-        <div class="metric-label">${c.label}</div>
-        <div class="metric-value">${c.value}</div>
-        <div class="metric-detail">${c.detail || ""}</div>
-      `;
+      const labelEl = document.createElement("div");
+      labelEl.className = "metric-label";
+      labelEl.textContent = c.label;
+
+      const valueEl = document.createElement("div");
+      valueEl.className = "metric-value";
+      valueEl.textContent = c.value;
+
+      const detailEl = document.createElement("div");
+      detailEl.className = "metric-detail";
+      detailEl.textContent = c.detail || "";
+
+      card.appendChild(labelEl);
+      card.appendChild(valueEl);
+      card.appendChild(detailEl);
     }
     metricsGrid.appendChild(card);
   });
